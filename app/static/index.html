@@ -1,0 +1,61 @@
+<html>
+    <head>
+        <title>QuickStart</title>
+        <script type="text/javascript" after defer>
+            function window_url() {
+                return window.location.protocol + '//' + window.location.hostname;
+            };
+            // define persistent state getters
+            async function frontend_perm_load() {
+                fetch(window_url() + "/bag/v1.0/get/quickstart_frontend_perm_count")
+                    .then((response) => {
+                        if (response.status === 400) {
+                            return 0;
+                        }
+                        return response.json()["value"];
+                    });
+            };
+
+            var frontend_count = 0;
+            function frontend_temp_click() {
+                frontend_count += 1;
+                document.getElementById("frontend_temp").textContent = frontend_count;
+            };
+            async function frontend_perm_click() {
+                var count = await frontend_perm_load();
+                count += 1;
+                fetch(window_url() + "/bag/v1.0/set/quickstart_frontend_perm_count/", {
+                    method: "post",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        value: count
+                    })
+                });
+                document.getElementById("frontend_perm").textContent = count;
+            };
+            async function backend_temp_click() {
+                document.getElementById("backend_temp").textContent = (await (await fetch("/temp_count")).json())["value"];
+            };
+            async function backend_perm_click() {
+                document.getElementById("backend_perm").textContent = (await (await fetch("/persistent_count")).json())["value"];
+            };
+
+            // load initial persistent states
+            document.getElementById("frontend_perm").textContent = frontend_perm_load();
+        </script>
+    </head>
+    <body>
+        <h1>Quick Start Functionalities</h1>
+        <button type="button" onclick="frontend_temp_click()">Frontend Temporary</button>
+        <p>Clicks: <a id="frontend_temp">0</a></p>
+        <button type="button" onclick="frontend_perm_click()">Frontend Persistent</button>
+        <p>Clicks: <a id="frontend_perm">?</a></p>
+        <button type="button" onclick="backend_temp_click()">Backend Temporary</button>
+        <p>Clicks: <a id="backend_temp">0</a></p>
+        <button type="button" onclick="backend_perm_click()">Backend Persistent</button>
+        <p>Clicks: <a id="backend_perm">?</a></p>
+    </body>
+</html>

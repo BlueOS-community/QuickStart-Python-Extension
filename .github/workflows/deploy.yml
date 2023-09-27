@@ -3,9 +3,9 @@ name: Deploy Image
 env:
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
   IMAGE_NAME: ${{ vars.IMAGE_NAME || 'quickstart-test' }}
-  PREFIXED_IMAGE: blueos-${IMAGE_NAME}
+  PREFIXED_IMAGE: ${{ format('blueos-{0}', vars.IMAGE_NAME || 'quickstart-test') }}
   # Target the same platforms as BlueOS by default
-  PLATFORMS: ${{ vars.BUILD_PLATFORMS || "linux/arm/v7,linux/arm64/v8,linux/amd64" }}
+  PLATFORMS: ${{ vars.BUILD_PLATFORMS || 'linux/arm/v7,linux/arm64/v8,linux/amd64' }}
 
 on:
   # Run manually
@@ -42,15 +42,17 @@ jobs:
           echo "docker_image=${DOCKER_IMAGE}" >> $GITHUB_OUTPUT
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "buildx_args=\
-            --build-arg GIT_DESCRIBE_TAGS=$(git describe --tags --long) \
-            --build-arg IMAGE_NAME=${IMAGE_NAME}
-            --build-arg AUTHOR=${{ vars.MY_NAME || 'Author Name' }} \
-            --build-arg AUTHOR_EMAIL=${{ vars.MY_EMAIL || 'author.email@example.com' }} \
-            --build-arg MAINTAINER=${{ vars.ORG_NAME || github.repository_owner }} \
-            --build-arg MAINTAINER_EMAIL=${{ vars.ORG_EMAIL || 'maintainer.email@example.com' }} \
-            --build-arg REPO=${{ github.repository }} \
-            --build-arg OWNER=${{ github.repository_owner }} \
-            --cache-to 'type=local,dest=/tmp/.buildx-cache'" >> $GITHUB_OUTPUT
+            --build-arg IMAGE_NAME=${IMAGE_NAME} \
+            --build-arg AUTHOR='${{ vars.MY_NAME || 'Author Name' }}' \
+            --build-arg AUTHOR_EMAIL='${{ vars.MY_EMAIL || 'author.email@example.com' }}' \
+            --build-arg MAINTAINER='${{ vars.ORG_NAME || github.repository_owner }}' \
+            --build-arg MAINTAINER_EMAIL='${{ vars.ORG_EMAIL || 'maintainer.email@example.com' }}' \
+            --build-arg REPO='${{ github.repository }}' \
+            --build-arg OWNER='${{ github.repository_owner }}' \
+            --cache-from 'type=local,src=/tmp/.buildx-cache' \
+            --cache-to 'type=local,dest=/tmp/.buildx-cache' \
+            ${TAGS} \
+            --file Dockerfile ." >> $GITHUB_OUTPUT
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -74,9 +76,10 @@ jobs:
 
       - name: Docker Buildx (build)
         run: |
-          # Pull latest version of image to help with build speed
+          # Pull latest development version of image (from main/master branch) to help with build speed
           for platform in $(echo ${PLATFORMS} | tr ',' '\n'); do
-            docker pull --platform ${platform} ${DOCKER_USERNAME}/${PREFIXED_IMAGE}:main || true
+            docker pull --platform ${platform} \
+              ${DOCKER_USERNAME}/${PREFIXED_IMAGE}:${{ github.event.repository.default_branch }} || true
           done
           docker buildx build \
             --output "type=image,push=false" \
@@ -95,7 +98,7 @@ jobs:
         run: |
           docker buildx build \
             --output "type=image,push=true" \
-            --platform ${PLATFORM} \
+            --platform ${PLATFORMS} \
             ${{ steps.prepare.outputs.buildx_args }}
 
       # Sanity check - if inspection fails something has gone very wrong
@@ -119,7 +122,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: success()
         with:
-          name: ${PREFIXED_IMAGE}-docker-image-arm64-v8
+          name: ${{ env.PREFIXED_IMAGE }}-docker-image-arm64-v8
           path: '*arm64-v8.tar'
 
       - name: Create image artifact
@@ -137,7 +140,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: success()
         with:
-          name: ${PREFIXED_IMAGE}-docker-image-arm-v7
+          name: ${{ env.PREFIXED_IMAGE }}-docker-image-arm-v7
           path: '*arm-v7.tar'
 
       - name: Create image artifact
@@ -155,7 +158,7 @@ jobs:
         uses: actions/upload-artifact@v3
         if: success()
         with:
-          name: ${PREFIXED_IMAGE}-docker-image-amd64
+          name: ${{ env.PREFIXED_IMAGE }}-docker-image-amd64
           path: '*amd64.tar'
 
       - name: Upload docker image for release
