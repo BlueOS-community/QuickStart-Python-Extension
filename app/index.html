@@ -1,0 +1,57 @@
+<html>
+    <head>
+        <title>QuickStart</title>
+        <script type="text/javascript" defer>
+            // define persistent state getters
+            async function frontend_perm_load() {
+                fetch("http://host.docker.internal:9101/v1.0/get/quickstart_frontend_perm_count")
+                    .then((response) => {
+                        if (response.status === 400) {
+                            return 0;
+                        }
+                        return response.json()["value"];
+                    };
+            };
+
+            var frontend_count = 0;
+            function frontend_temp_click() {
+                frontend_count += 1;
+                document.getElementByID("frontend_temp").textContent = frontend_count;
+            };
+            async function frontend_perm_click() {
+                var count = await frontend_perm_load();
+                count += 1;
+                fetch("http://host.docker.internal:9101/v1.0/set/quickstart_frontend_perm_count/", {
+                    method: "post",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        value: count
+                    })
+                });
+            };
+            async function backend_temp_click() {
+                return await fetch("http://localhost/temp_count").json()["value"];
+            };
+            async function backend_perm_click() {
+                return await fetch("http://localhost/persistent_count").json()["value"];
+            };
+
+            // load initial persistent states
+            document.getElementByID("frontend_perm").textContent = await frontend_perm_load();
+        </script>
+    </head>
+    <body>
+        <h1>Quick Start Functionalities</h1>
+        <button type="button" onclick="frontend_temp_click()">Frontend Temporary</button>
+        <p>Clicks: <a id="frontend_temp">0</a></p>
+        <button type="button" onclick="frontend_perm_click()">Frontend Permanent</button>
+        <p>Clicks: <a id="frontend_perm">?</a></p>
+        <button type="button" onclick="backend_temp_click()">Backend Temporary</button>
+        <p>Clicks: <a id="backend_temp">0</a></p>
+        <button type="button" onclick="backend_perm_click()">Backend Permanent</button>
+        <p>Clicks: <a id="backend_perm">?</a></p>
+    </body>
+</html>

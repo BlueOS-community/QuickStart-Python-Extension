@@ -1,0 +1,15 @@
+[project]
+name = "quickstart"
+version = "0.0.1"
+description = "BlueOS QuickStart Example Extension"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "aiohttp",
+    "uvicorn >= 0.23.0",
+    "litestar >= 2.1.1",
+]
+
