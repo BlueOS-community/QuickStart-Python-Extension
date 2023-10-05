@@ -1,15 +1,11 @@
-FROM python:3.11-slim
-
-# RUN apt-get update && \
-#    apt-get -y install gcc && \
-#    rm -rf /var/lib/apt/lists/*
+FROM python:3-slim
 
 COPY app /app
 RUN python -m pip install /app --extra-index-url https://www.piwheels.org/simple
 
 EXPOSE 8000/tcp
 
-LABEL version="0.0.1"
+LABEL version="0.0.2"
 
 ARG IMAGE_NAME
 
