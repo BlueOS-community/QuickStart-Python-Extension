@@ -1,4 +1,4 @@
-FROM python:3-slim
+FROM python:3.11-slim
 
 COPY app /app
 RUN python -m pip install /app --extra-index-url https://www.piwheels.org/simple
