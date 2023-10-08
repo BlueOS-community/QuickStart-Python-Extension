@@ -7,8 +7,8 @@ A quick-start repository for building and uploading a Python-focused BlueOS Exte
 This is intended to showcase:
 1. How to make a basic Extension with a simple web interface, using Python and some HTML
 2. The difference between code running on the frontend vs the backend
-  - Backend code has access to vehicle hardware and other service APIs, as well as the filesystem (for things like persistent logging)
-  - Frontend code is in charge of the display, and runs in the browser interface (instead of on the vehicle's onboard computer)
+    - Backend code has access to vehicle hardware and other service APIs, as well as the filesystem (for things like persistent logging)
+    - Frontend code is in charge of the display, and runs in the browser interface (instead of on the vehicle's onboard computer)
 
 ## Usage
 
