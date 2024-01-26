@@ -7,7 +7,7 @@
             };
             // define persistent state getters
             async function frontend_perm_load() {
-                fetch(window_url() + "/bag/v1.0/get/quickstart_frontend_perm_count")
+                return fetch(window_url() + "/bag/v1.0/get/quickstart_frontend_perm_count")
                     .then((response) => {
                         if (response.status === 400) {
                             return 0;
