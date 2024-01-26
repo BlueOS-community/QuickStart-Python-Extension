@@ -43,7 +43,7 @@
             };
 
             // load frontend-triggered persistent state
-            document.getElementById("frontend_perm").textContent = await frontend_perm_load();
+            document.getElementById("frontend_perm").textContent = frontend_perm_load();
             // don't load backend-triggered persistent state, because doing so counts as a click
         </script>
     </head>
