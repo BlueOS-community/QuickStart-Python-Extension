@@ -23,7 +23,7 @@
             async function frontend_perm_click() {
                 var count = await frontend_perm_load();
                 count += 1;
-                fetch(window_url() + "/bag/v1.0/set/quickstart_frontend_perm_count/", {
+                fetch(window_url() + "/bag/v1.0/set/quickstart_frontend_perm_count", {
                     method: "post",
                     headers: {
                         'Accept': 'application/json',
