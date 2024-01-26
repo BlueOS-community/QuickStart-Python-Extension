@@ -1,6 +1,6 @@
 [project]
 name = "quickstart"
-version = "0.0.1"
+version = "0.0.2"
 description = "BlueOS QuickStart Example Extension"
 classifiers = [
     "Programming Language :: Python :: 3",

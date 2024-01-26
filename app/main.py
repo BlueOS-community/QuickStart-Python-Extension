@@ -44,7 +44,7 @@ logging_config = LoggingConfig(
     },
 )
 
-log_dir = Path('/root/.config/logs')
+log_dir = Path('/app/logs')
 log_dir.mkdir(parents=True, exist_ok=True)
 fh = logging.handlers.RotatingFileHandler(log_dir / 'lumber.log', maxBytes=2**16, backupCount=1)
 

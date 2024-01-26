@@ -5,7 +5,7 @@ RUN python -m pip install /app --extra-index-url https://www.piwheels.org/simple
 
 EXPOSE 8000/tcp
 
-LABEL version="0.0.2"
+LABEL version="0.0.3"
 
 ARG IMAGE_NAME
 
@@ -15,7 +15,7 @@ LABEL permissions='\
     "8000/tcp": {}\
   },\
   "HostConfig": {\
-    "Binds":["/root/.config/blueos/extensions/$IMAGE_NAME:/root/.config"],\
+    "Binds":["/usr/blueos/extensions/$IMAGE_NAME:/app"],\
     "ExtraHosts": ["host.docker.internal:host-gateway"],\
     "PortBindings": {\
       "8000/tcp": [\
